@@ -1,5 +1,9 @@
 .hermes/
+dist/
+.wrangler/
+node_modules/
 drafts/
 PRODUCT.md
 assets/compi-readme.png
+assets/compi-release-workspace.png
 assets/Screenshot 2026-09-29 141627.png
