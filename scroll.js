@@ -24,21 +24,6 @@ const scenes = {
 };
 
 const root = document.documentElement;
-const themeButton = document.getElementById('page-theme-toggle');
-function applyTheme(theme) {
-  const warmCarbon = theme === 'warm-carbon' || theme === 'light';
-  root.dataset.theme = warmCarbon ? 'warm-carbon' : 'dark';
-  const label = `Switch to ${warmCarbon ? 'Neutral' : 'Warm Carbon'}`;
-  themeButton.setAttribute('aria-label', label);
-  themeButton.setAttribute('aria-pressed', String(warmCarbon));
-  themeButton.title = label;
-  document.querySelector('meta[name="theme-color"]').content = warmCarbon ? '#171613' : '#151515';
-}
-applyTheme(root.dataset.theme);
-themeButton.addEventListener('click', () => {
-  applyTheme(root.dataset.theme === 'warm-carbon' ? 'dark' : 'warm-carbon');
-  try { localStorage.setItem('compi-page-theme', root.dataset.theme); } catch { /* Storage is optional. */ }
-});
 
 const commands = [
   'compi --json pane list',

@@ -1,6 +1,7 @@
 import { cp, mkdir, readFile, rm, stat } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import './generate-docs.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const output = join(root, 'dist');
@@ -10,6 +11,10 @@ const files = [
   'index.html',
   'style.css',
   'scroll.js',
+  'theme.js',
+  'docs.html',
+  'docs.css',
+  'docs.js',
   'assets/compi-icon.png',
   'assets/Compi-desktopappicon-v4.ico',
   'assets/mark-github.svg',
@@ -20,7 +25,7 @@ const files = [
   'assets/notifications-poster.jpg',
 ];
 const allowed = new Set(files);
-const html = await readFile(join(root, 'index.html'), 'utf8');
+const html = (await Promise.all(['index.html', 'docs.html'].map(file => readFile(join(root, file), 'utf8')))).join('\n');
 const script = await readFile(join(root, 'scroll.js'), 'utf8');
 const localRefs = [
   ...[...html.matchAll(/(?:src|href|poster)="([^"#]+)"/g)].map(match => match[1]),
@@ -28,7 +33,7 @@ const localRefs = [
 ];
 for (const ref of localRefs) {
   if (/^(?:https?:|data:|mailto:)/.test(ref)) continue;
-  const clean = ref.split(/[?#]/)[0];
+  const clean = ref.split(/[?#]/)[0].replace(/^\//, '') || 'index.html';
   if (!allowed.has(clean)) throw new Error(`Public asset not in deployment allowlist: ${clean}`);
 }
 for (const file of files) {

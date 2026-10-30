@@ -1,0 +1,12 @@
+{
+  "name": "compi-marketing",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "check": "node --check theme.js && node --check scroll.js && node --check docs.js && node tools/generate-docs.mjs --check"
+  },
+  "devDependencies": {
+    "marked": "18.1.2"
+  }
+}
