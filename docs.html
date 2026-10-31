@@ -7,7 +7,7 @@
 <meta name="description" content="Install and use Compi: workspaces, editing, browser panes, agents, CLI reference, notifications and troubleshooting.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Compi documentation · 0.5.0">
-<meta property="og:description" content="Work with your agent. Edit, review and run in the same workspace. Close the window and your shells keep running.">
+<meta property="og:description" content="Run your preferred agents, write instructions and review their changes. Inspect the result beside the terminals doing the work.">
 <meta property="og:image" content="https://compi-marketing.pages.dev/assets/agent-diff-terminal.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/Compi-desktopappicon-v4.ico?v=neutral-eye" sizes="any">
@@ -25,7 +25,7 @@
 <a href="#workspaces" data-doc-link="workspaces">Workspaces and panes</a>
 <a href="#files" data-doc-link="files">Files, editing and review</a>
 <a href="#browser" data-doc-link="browser">Browser panes</a>
-<a href="#agents" data-doc-link="agents">Agents and CLI</a>
+<a href="#agents" data-doc-link="agents">Work with agents</a>
 <a href="#cli-reference" data-doc-link="cli-reference">Command reference</a>
 <a href="#appearance" data-doc-link="appearance">Appearance and settings</a>
 <a href="#notifications" data-doc-link="notifications">Status and notifications</a>
@@ -120,9 +120,20 @@ compi browse https://docs.rs --down</code></pre>
 <p><strong>Browser home page:</strong> a Browser pane without an address shows Compi&#39;s home page. <strong>Running here</strong> lists the local servers your terminals printed addresses for (a dev server&#39;s <code>Local:   http://localhost:5173/</code>, for one) that are answering now, this tab&#39;s first, each with its tab&#39;s name. <strong>Recent</strong> lists the window&#39;s last five sites. Click one to open it; Back from the first page returns home.</p>
 <p><code>compi browse URL</code> opens URL in a Browser pane beside the selected terminal (below it with <code>--down</code>); the shell stays as it is. From a Browser pane (<code>--pane</code>), that pane goes to URL. Without a URL the pane opens on its home page with the keyboard in its address field: paste a link there to skip shell quoting (zsh, for one, stops at an unquoted <code>?</code> or <code>&amp;</code>). A pasted link may come with text around it, such as quotes, <code>&lt;…&gt;</code>, a Markdown link, a dev server&#39;s <code>Local:   http://localhost:5173/</code> line or a trailing period; Compi takes the link out of it. <code>compi --json window list</code> reports each shown Browser pane&#39;s <code>page</code>: its <code>url</code>, <code>title</code>, the address <code>loading</code> and the <code>error</code> of a failed load.</p>
 </div></details><a class="source-link" href="https://github.com/cloudboy-jh/compi/blob/v0.5.0/docs/user/USAGE.md">Source: USAGE.md ↗</a></section>
-<section class="docs-section" id="agents" data-doc-section><h2>Agents and CLI<a class="heading-link" href="#agents" aria-label="Link to Agents and CLI">#</a></h2>
-<p class="section-lead">Any agent that can run shell commands can use Compi’s public CLI.</p>
-<p>Inside a supported Compi shell, the matching CLI is on <code>PATH</code> and inherits its instance and pane context. It operates the workspace around the agent; it is not an agent harness.</p>
+<section class="docs-section" id="agents" data-doc-section><h2>Work with agents<a class="heading-link" href="#agents" aria-label="Link to Work with agents">#</a></h2>
+    <p>Run your preferred agent in a Compi terminal. Keep its instructions, changes and the app it is building in the same workspace. You choose the agent and decide what to review and ship.</p>
+<ol>
+<li><strong>Write the task.</strong> Keep instructions or a spec in an ordinary Markdown file in your project. Open it in Files and use Edit / Read to write or read it. Give the agent the file&#39;s path; opening a file does not automatically add it to the agent&#39;s context.</li>
+<li><strong>Run the work.</strong> Start your agent in the project&#39;s directory. Keep another terminal beside it for builds, tests or a development server. Use tabs and splits to arrange the work without restarting its programs.</li>
+<li><strong>Review the changes.</strong> Open Changes or run <code>compi diff</code> to inspect the working-tree diff. Open a file to make a correction, then save it. The diff reads files on disk, not unsaved editor buffers. Check test output as well as the agent&#39;s description of its work.</li>
+<li><strong>Inspect the result.</strong> Start your app&#39;s development server, then open its address in a Browser pane. You can check the app beside the terminal that runs it. Automated browser verification uses your agent&#39;s own browser tools; opening a pane does not perform it.</li>
+<li><strong>Return when needed.</strong> In Settings → Notifications, choose how supporting programs notify you when they need attention or finish. Finished notifications are optional. Click a notification to return to its terminal. Programs must report status; ordinary terminal output does not trigger these events.</li>
+</ol>
+<p>Closing Compi&#39;s window leaves the shells running. Restarting its server or rebooting ends those processes.</p>
+<p>An agent can also use Compi&#39;s CLI to inspect panes, arrange the workspace and open results for you. Start with <code>compi help</code> or <code>compi --json help</code> for structured discovery. See <a href="https://github.com/cloudboy-jh/compi/blob/v0.5.0/docs/user/USAGE.md#command-line-workspace-control">workspace control</a>, <a href="https://github.com/cloudboy-jh/compi/blob/v0.5.0/docs/user/USAGE.md#files-and-projects-in-the-terminal">editing and review</a> and <a href="https://github.com/cloudboy-jh/compi/blob/v0.5.0/docs/user/USAGE.md#program-status">program status and notifications</a> for details.</p>
+
+    <h3>Operate the workspace from the CLI</h3>
+    <p>Inside a supported Compi shell, the matching CLI is on <code>PATH</code> and inherits its instance and pane context. It operates the workspace around the agent; it is not an agent harness.</p>
 <h3>Discover, inspect, act, read back</h3><pre><code>compi --json help
 compi --json pane show
 compi run -- cargo test --locked -p compi-protocol

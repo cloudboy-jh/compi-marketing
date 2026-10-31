@@ -11,8 +11,9 @@ const ref = `v${version}`;
 const repository = `https://github.com/cloudboy-jh/compi/blob/${ref}`;
 const readNormalized = async (file) => (await readFile(file, 'utf8')).replace(/\r\n/g, '\n');
 const read = (name) => readNormalized(join(sourceDir, name));
-const [installation, usage, configuration, catalogueRaw, index] = await Promise.all([
+const [installation, usage, configuration, catalogueRaw, index, agentWorkflow] = await Promise.all([
   read('INSTALLATION.md'), read('USAGE.md'), read('CONFIGURATION.md'), read('cli.json'), readNormalized(join(root, 'index.html')),
+  readNormalized(join(root, 'content', 'guides', 'AGENT_WORKFLOW.md')),
 ]);
 const catalogue = JSON.parse(catalogueRaw);
 assert.equal(catalogue.version, version);
@@ -105,9 +106,10 @@ ${code('compi browse\ncompi browse localhost:3000\ncompi browse https://docs.rs 
 ${details('Browser toolbar, profile, home page and CLI behavior', [bullet('Open a web page beside a terminal'), bullet('Browser home page'), paragraph('`compi browse URL`')].join('\n\n'))}${sourceLink('USAGE.md')}`,
   },
   {
-    id: 'agents', title: 'Agents and CLI', content: `
-<p class="section-lead">Any agent that can run shell commands can use Compi’s public CLI.</p>
-<p>Inside a supported Compi shell, the matching CLI is on <code>PATH</code> and inherits its instance and pane context. It operates the workspace around the agent; it is not an agent harness.</p>
+    id: 'agents', title: 'Work with agents', content: `
+    ${markdown(agentWorkflow.replace(/^# Work with agents\s*/, ''), 'AGENT_WORKFLOW.md')}
+    <h3>Operate the workspace from the CLI</h3>
+    <p>Inside a supported Compi shell, the matching CLI is on <code>PATH</code> and inherits its instance and pane context. It operates the workspace around the agent; it is not an agent harness.</p>
 <h3>Discover, inspect, act, read back</h3>${code('compi --json help\ncompi --json pane show\ncompi run -- cargo test --locked -p compi-protocol\ncompi pane capture --scope scrollback --format text')}
 <p>The test command is for a shell in Compi’s source repository. <code>run</code> submits without waiting. Capture reads the output available so far; inspect or capture again to check progress. No fabricated success is returned on behalf of the running program.</p>
 <h3>Choose the exact target</h3>${markdown(paragraph('Outside a Compi shell,'))}
