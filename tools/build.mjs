@@ -18,11 +18,12 @@ const files = [
   'assets/compi-icon.png',
   'assets/Compi-desktopappicon-v4.ico',
   'assets/mark-github.svg',
-  'assets/agent-diff-terminal.png',
-  'assets/gpui-research.png',
-  'assets/monitor-and-build.png',
+  'assets/workspace-full.png',
+  'assets/workspace-chat.png',
+  'assets/workspace-diff.png',
+  'assets/workspace-browser.png',
+  'assets/compi-social-preview.png',
   'assets/notifications-demo.mp4',
-  'assets/notifications-poster.jpg',
 ];
 const allowed = new Set(files);
 const html = (await Promise.all(['index.html', 'docs.html'].map(file => readFile(join(root, file), 'utf8')))).join('\n');

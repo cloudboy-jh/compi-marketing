@@ -31,9 +31,38 @@ terminal_opacity = 0.7 # remembered background opacity, not text opacity
 
 [font]
 family = "JetBrains Mono"
+size = 14 # 6 through 72
 ```
 
 Terminal presets include the platform default, JetBrains Mono, IBM Plex Mono, and Atkinson Hyperlegible Mono. Custom installed families remain supported through `font.family`. Bundled font notices and SIL Open Font License 1.1 text are in [`crates/compi-client/fonts/ATTRIBUTION.txt`](../../crates/compi-client/fonts/ATTRIBUTION.txt).
+
+**Settings → Terminal → Font size** sizes terminal text with −, + and **Reset**; with a terminal focused, Ctrl+= and Ctrl+- (Cmd on macOS) step it by one, and Ctrl/Cmd+0 resets it. The size is saved as `font.size` and every window follows it, including after editing the file by hand. Reset removes the key, returning to the default of 14.
+
+**Settings → Terminal → File text size** sizes file panes: the editor, diffs, the Markdown Read view, large text previews, and the Files and Changes lists. With one of them focused, Ctrl+=, Ctrl+- and Ctrl/Cmd+0 change this size instead of the terminal font. Until you set it, file panes follow the terminal font size. It is saved as `files.text_size` (8 through 32); Reset removes the key.
+
+```toml
+[files]
+text_size = 15 # 8 through 32; unset follows font.size
+```
+
+## Chat
+
+**Settings → Chat** holds what Compi controls about agent chats; the model, thinking level and mode stay in each chat's own pickers, since OMP keeps them. A change made in Settings applies to every open window.
+
+- **Text size** sizes agent chats with −, + and **Reset**. The messages and everything around them (header, tool cards, menus, the message box) grow together; the rest of the window keeps its size. With a chat focused, Ctrl+=, Ctrl+- and Ctrl+0 (Cmd on macOS) change the chat text size instead of the terminal font. Reset removes the key, returning to the default of 14.
+- **Approvals** chooses how OMP asks before it runs tools. **Same as OMP** (the default) uses OMP's own `tools.approvalMode`, the setting OMP follows in a terminal; Compi reads it when the chat starts and hands it to OMP, which its chat mode would otherwise ignore. **Always ask** asks before anything but reading, **Allow edits** runs reads and edits and asks before commands, and **Allow everything** never asks. A change applies to new chats and to chats that start again (Restart in the ⋯ menu, or after the daemon restarts); a running chat keeps the mode it started with.
+- **Enter while OMP works**: **Steer** (the default) sends the message into the running turn and Ctrl+Enter (Cmd+Enter on macOS) queues it for after; **Queue** swaps the two.
+- **Opening a chat**: **In place of the shell** (the default) shows the chat over the terminal it starts from; **Beside it** opens it in a new pane next to that terminal.
+- **Agents bar** (on) lists OMP's running sub-agents above the message box.
+
+```toml
+[chat]
+text_size = 14 # 10 through 32
+approval = "harness" # harness (Same as OMP), always_ask, write or yolo
+enter_while_working = "steer" # steer or queue
+open = "in_place" # in_place or beside
+agents_bar = true
+```
 
 ## Pane density
 
@@ -44,9 +73,9 @@ Terminal presets include the platform default, JetBrains Mono, IBM Plex Mono, an
 
 When more than one pane is visible, the focused pane is marked as set under **Focus indicator** below; terminal colours are unchanged. Floating panes keep their shadow and title strip and use the same corner radius. Switching density resizes terminals through the normal resize path, so running programs keep running and reflow once.
 
-## Tab metadata
+## Tab details
 
-**Settings → Interface → Tab metadata** writes independent global caption/hover preferences:
+**Settings → Interface → Tab details** writes independent global caption/hover preferences:
 
 ```toml
 [metadata]
@@ -78,7 +107,8 @@ sidebar = true  # state at the start of the sidebar and palette status line
 delivery = "automatic"  # "automatic" (in Compi while it is active, else from the system), "in_app", "os" or "both"
 attention = true        # a program is blocked on you: a permission, a question or a sign-in
 finished = false        # a program reports its work done
-sound = "off"           # or "default", "message", "mail", "reminder", "text_message": Windows' notification sounds, once per notification, unless Windows is quiet
+sound = "off"           # or "default"; Windows: "message", "mail", "reminder", "text_message"; macOS: "basso", "blow", "bottle", "frog", "funk", "glass", "hero", "morse", "ping", "pop", "purr", "sosumi", "submarine", "tink". Once per notification, unless the system is quiet; the other system's sounds play the default
+focused_pane_after = 30 # seconds without a key press, click or scroll in Compi before the pane you're in notifies too; 0 never, at most 3600
 ```
 
 ## Closing tabs and panes
@@ -107,5 +137,14 @@ focus_indicator = "marker" # marker, outline, dim, or none
 ```
 
 Floating panes keep their **Keyboard** label with every option. When the system asks for reduced motion (Windows Animation effects off, or macOS Reduce motion), the arrival outline shows for the same time without fading; this is read when Compi starts.
+
+## Dev servers
+
+**Settings → Terminal → When a dev server starts** chooses what a terminal does once a local address it printed, such as `http://localhost:5173/`, answers: **Offer to open** (default) shows a card with the address at the pane's bottom right, **Open automatically** shows the page in place of the shell once for each start of the server, and **Do nothing** leaves the terminal as it is.
+
+```toml
+[workspace]
+dev_server = "offer" # offer, open, or nothing
+```
 
 [Back to README](../../README.md)

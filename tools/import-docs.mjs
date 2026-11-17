@@ -5,9 +5,9 @@ import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 
 const repository = process.argv[2];
-const ref = process.argv[3] ?? 'v0.5.0';
+const ref = process.argv[3] ?? 'v0.8.1';
 if (!repository || !/^v\d+\.\d+\.\d+$/.test(ref)) {
-  throw new Error('Usage: node tools/import-docs.mjs COMPI_REPOSITORY v0.5.0');
+  throw new Error('Usage: node tools/import-docs.mjs COMPI_REPOSITORY v0.8.1');
 }
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const version = ref.slice(1);

@@ -1,7 +1,7 @@
 {
-  "version": "0.5.0",
-  "ref": "v0.5.0",
-  "commit": "8b81da9903657dc3d86593b7c0e4af9be6672487",
+  "version": "0.8.1",
+  "ref": "v0.8.1",
+  "commit": "d5fb6e34ced93d013f2a86746dd6d0e00363b247",
   "source": "crates/compi-client/src/cli/help.rs",
   "entries": [
     {
@@ -115,6 +115,86 @@
       "detail": "Restore the surviving tabs recorded by a merge, retaining stable IDs.",
       "example": "compi --tab work/build tab unmerge",
       "action": "unmerge"
+    },
+    {
+      "command": "tab",
+      "usage": "tab group [TAB...] [--name NAME] [--color COLOR]\ntab group [TAB] --into GROUP",
+      "summary": "Put tabs in a new group, or in an existing one",
+      "detail": "Put the named tabs, or the selected one, in a new group gathered where the first of them is. The name may be empty; COLOR is grey, blue, green, yellow, red, magenta or cyan, by default the first one no group uses. With --into, the tab joins GROUP after its last tab. TAB is an ID, name or WORKSPACE/NAME; GROUP an ID or name.",
+      "example": "compi --workspace work tab group build tests --name CI --color blue",
+      "action": "group"
+    },
+    {
+      "command": "tab",
+      "usage": "tab ungroup [TAB]",
+      "summary": "Take a tab out of its group",
+      "detail": "Take the named tab, or the selected one, out of its group; it lands just after the group. A group left without tabs ends.",
+      "example": "compi --workspace work tab ungroup tests",
+      "action": "ungroup"
+    },
+    {
+      "command": "group",
+      "usage": "group list",
+      "summary": "List tab groups with their tabs and IDs",
+      "detail": "List the tab groups in the selected workspace, or in every workspace when none is selected, with each group's colour, tab count and whether it is folded. --json lists each group's tab IDs.",
+      "example": "compi --workspace work --json group list",
+      "action": "list"
+    },
+    {
+      "command": "group",
+      "usage": "group rename GROUP NAME",
+      "summary": "Rename a tab group",
+      "detail": "Rename the group, keeping its ID. An empty name leaves only its colour. GROUP is an ID or a name in any case; --workspace narrows names.",
+      "example": "compi group rename CI checks",
+      "action": "rename"
+    },
+    {
+      "command": "group",
+      "usage": "group color GROUP COLOR",
+      "summary": "Change a tab group's colour",
+      "detail": "Set the group's colour: grey, blue, green, yellow, red, magenta or cyan, drawn from the theme's terminal palette.",
+      "example": "compi group color CI magenta",
+      "action": "color"
+    },
+    {
+      "command": "group",
+      "usage": "group fold GROUP",
+      "summary": "Fold a tab group to its label",
+      "detail": "Hide the group's tabs from the tab strip in every window, leaving its label; their processes keep running.",
+      "example": "compi group fold CI",
+      "action": "fold"
+    },
+    {
+      "command": "group",
+      "usage": "group unfold GROUP",
+      "summary": "Show a folded group's tabs again",
+      "detail": "Show the group's tabs in the tab strip again.",
+      "example": "compi group unfold CI",
+      "action": "unfold"
+    },
+    {
+      "command": "group",
+      "usage": "group move GROUP --index N",
+      "summary": "Move a tab group's tabs together",
+      "detail": "Move the group's tabs together to zero-based index N among the workspace's other tabs. An index inside another group lands after that group.",
+      "example": "compi group move CI --index 0",
+      "action": "move"
+    },
+    {
+      "command": "group",
+      "usage": "group ungroup GROUP",
+      "summary": "End a tab group, keeping its tabs",
+      "detail": "End the group; its tabs stay where they are, ungrouped.",
+      "example": "compi group ungroup CI",
+      "action": "ungroup"
+    },
+    {
+      "command": "group",
+      "usage": "group close GROUP",
+      "summary": "Close every tab of a group, asking first",
+      "detail": "Close every tab in the group, confirming interactively if any process is running or an open window holds unsaved edits in their content panes.",
+      "example": "compi group close CI",
+      "action": "close"
     },
     {
       "command": "pane",
@@ -318,17 +398,25 @@
     },
     {
       "command": "browse",
-      "usage": "browse [URL] [--down]",
+      "usage": "browse [URL|FILE|FOLDER|PORT] [--down]",
       "summary": "Open a web page beside the terminal",
-      "detail": "Open URL in a Browser pane beside the selected terminal (below it with --down); the shell stays as it is. URL is an http, https or file URL, or about:blank; without a scheme, http:// is assumed, so localhost:3000 opens http://localhost:3000. Text pasted around a link (quotes, <...>, a Markdown link, a Local: prefix, trailing punctuation) is dropped. Without URL the pane opens on its home page (local servers your terminals printed, recent sites) with the keyboard in its address field, where a link can be pasted without shell quoting. From a Browser pane (--pane), that pane goes to URL. The page is the system web view's (WebView2 on Windows, WKWebView on macOS), with one persistent profile per instance. --json returns {pane_id, url, shown, not_shown, receipt, workspace}.",
+      "detail": "Open URL in a Browser pane beside the selected terminal (below it with --down); the shell stays as it is. URL is an http, https or file URL, or about:blank; without a scheme, http:// is assumed, so localhost:3000 opens http://localhost:3000, and a bare PORT (5173, :5173) is that port of this machine. A FILE or FOLDER where the pane's shell runs opens as a file page: a path that says where it starts (., ./site, ../x.html, /home/me/app, C:\\site) or a page's file name (index.html); a FOLDER shows its index.html. Relative paths start from the shell's directory. A page opened from a file cannot load JavaScript modules or fetch other files (the web view's rule for file pages): start the project's server and browse its address for that. Text pasted around a link (quotes, <...>, a Markdown link, a Local: prefix, trailing punctuation) is dropped. Without an argument the pane opens on its home page (local servers your terminals printed, recent sites) with the keyboard in its address field, where a link can be pasted without shell quoting. From a Browser pane (--pane), that pane goes to URL. The page is the system web view's (WebView2 on Windows, WKWebView on macOS), with one persistent profile per instance. --json returns {pane_id, url, shown, not_shown, receipt, workspace}.",
       "example": "compi browse 'localhost:3000/search?q=x'",
+      "action": null
+    },
+    {
+      "command": "chat",
+      "usage": "chat",
+      "summary": "Chat with OMP in or beside the terminal's pane",
+      "detail": "Start a new chat with OMP (the omp agent harness) in the selected terminal's own pane, in place of the shell, which keeps running underneath at its size; Cmd/Ctrl+Shift+E or Esc returns to it. With [chat] open = \"beside\" (Settings → Chat → Opening a chat), it opens in a new pane beside the terminal instead. OMP works in the shell's current directory, in the terminal's environment (a WSL distribution runs omp there). The chat runs in the daemon and keeps going while the view is hidden; it ends when its pane or view closes. --json adds the chat's id and folder.",
+      "example": "compi chat",
       "action": null
     },
     {
       "command": "settings",
       "usage": "settings [SECTION]",
       "summary": "Show Settings in the terminal's pane",
-      "detail": "Show Settings in the selected terminal's own pane, in place of the shell, which keeps running underneath at its size; Cmd/Ctrl+Shift+E or Esc returns to it. SECTION is appearance, interface, notifications, terminal, keyboard, monitor, updates or advanced; without it the pane keeps the section it shows, else Appearance. From a Settings pane (--pane), that pane changes section.",
+      "detail": "Show Settings in the selected terminal's own pane, in place of the shell, which keeps running underneath at its size; Cmd/Ctrl+Shift+E or Esc returns to it. SECTION is appearance, interface, notifications, terminal, chat, keyboard, monitor, updates or advanced; without it the pane keeps the section it shows, else Appearance. From a Settings pane (--pane), that pane changes section.",
       "example": "compi settings terminal",
       "action": null
     },

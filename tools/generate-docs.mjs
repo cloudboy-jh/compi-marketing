@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { marked } from 'marked';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const version = '0.5.0';
+const version = '0.8.1';
 const sourceDir = join(root, 'content', version);
 const ref = `v${version}`;
 const repository = `https://github.com/cloudboy-jh/compi/blob/${ref}`;
@@ -47,10 +47,10 @@ const code = (text) => `<pre><code>${escape(text)}</code></pre>`;
 const details = (title, text, source = 'USAGE.md') => `<details class="source-detail"><summary>${escape(title)}</summary><div class="detail-body">${markdown(text, source)}</div></details>`;
 const sourceLink = (file, anchor = '') => `<a class="source-link" href="${repository}/docs/user/${file}${anchor}">Source: ${escape(file)} ↗</a>`;
 const groups = [
-  ['Workspaces and tabs', ['workspace', 'tab']],
+  ['Workspaces and tabs', ['workspace', 'tab', 'group']],
   ['Panes and layouts', ['pane', 'split', 'layout', 'window']],
   ['Terminal input and output', ['run', 'attach', 'detach']],
-  ['Files and views', ['files', 'edit', 'notes', 'diff', 'browse', 'settings', 'monitor']],
+  ['Files and views', ['files', 'edit', 'notes', 'diff', 'browse', 'chat', 'settings', 'monitor']],
   ['Palette actions', ['command']],
   ['Application', ['theme', 'update', 'changes', 'help']],
 ];
@@ -62,19 +62,20 @@ const sections = [
     id: 'get-started', title: 'Get started', content: `
 <p class="section-lead">Install Compi, open a shell and make your first split.</p>
 <div class="platform-grid"><div><h3>Windows</h3>${markdown(subsection(installation, '### Windows'), 'INSTALLATION.md')}</div><div><h3>macOS</h3>${markdown(subsection(installation, '### macOS'), 'INSTALLATION.md')}</div></div>
-<div class="notice"><strong>First-launch trust warnings</strong><p>0.5.0 Windows packages are unsigned. The Mac app is ad-hoc signed, not notarized. For a download you trust, Windows may offer <strong>More info → Run anyway</strong>; on macOS try opening it, then use <strong>System Settings → Privacy &amp; Security → Open Anyway</strong>. Do not disable operating-system security globally. Managed-device policy may prevent these overrides.</p></div>
+<div class="notice"><strong>First-launch trust warnings</strong><p>${version} Windows packages are not publisher-signed. The Mac app is ad-hoc signed, not notarized. For a download you trust, Windows may offer <strong>More info → Run anyway</strong>; on macOS try opening it, then use <strong>System Settings → Privacy &amp; Security → Open Anyway</strong>. Do not disable operating-system security globally. Managed-device policy may prevent these overrides.</p></div>
 <h3>Your first workspace</h3><ol><li>Launch Compi and open the palette with <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>, or <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> on macOS.</li><li>Choose <strong>New workspace</strong> to organize a project, then <strong>New terminal tab</strong> to start a shell.</li><li>Choose <strong>Split right</strong> or <strong>Split down</strong>. New tabs and splits inherit the focused terminal’s reported directory.</li></ol>
 ${code('compi split --right\ncompi --json pane list')}
 <p>Run those commands inside a Compi shell. Closing the app window keeps the server-owned shells running; closing a pane or restarting the server is different.</p>
+<p>On Windows, a new installation starts tabs in Windows PowerShell. Choose WSL under <strong>Settings → Terminal → Shell</strong> to start Linux shells instead; an earlier installation stays on WSL.</p>
 ${details('Using the palette and returning to the shell', `${bullet('The palette')}\n\n${bullet('Views in place')}`)}${sourceLink('INSTALLATION.md')}`,
   },
   {
     id: 'workspaces', title: 'Workspaces and panes', content: `
 <p class="section-lead">Organize projects into workspaces, tabs and panes without restarting their programs.</p>
-<ul><li><strong>Workspace:</strong> a named group of tabs.</li><li><strong>Tab:</strong> one terminal or a layout of split panes.</li><li><strong>Pane:</strong> a terminal or content view that can be resized, moved, zoomed, floated or docked.</li></ul>
+<ul><li><strong>Workspace:</strong> a named group of tabs.</li><li><strong>Tab:</strong> one terminal or a layout of split panes.</li><li><strong>Tab group:</strong> coloured tabs that share a label and can fold to it while their processes keep running.</li><li><strong>Pane:</strong> a terminal or content view that can be resized, moved, zoomed, floated or docked.</li></ul>
 <h3>Move and arrange</h3><p>Hover a pane for its <strong>⋯</strong> grip. Click for actions, or drag onto an edge to split beside another pane, the centre to swap, another tab to join it, or empty tab-bar space to make a new tab. Escape cancels.</p>
-${details('Pane movement, floats and layout presets', [bullet('Move a pane'), bullet('Float a pane'), bullet('Arrange panes and tabs')].join('\n\n'))}
-<h3>Hide, close or end?</h3><div class="table-wrap"><table><thead><tr><th>Action</th><th>What happens</th></tr></thead><tbody><tr><td>Close the app window</td><td>The background server keeps running shells alive.</td></tr><tr><td>Hide a terminal tab</td><td>The tab’s processes keep running; restore it through the palette.</td></tr><tr><td>Close a pane or tab</td><td>Its processes end. GUI close confirmation is optional and off by default.</td></tr><tr><td>End process…</td><td>Asks first and leaves the terminal’s final screen visible.</td></tr><tr><td>Restart daemon</td><td>Asks first and ends the server’s running shells.</td></tr></tbody></table></div>
+${details('Pane movement, floats, tab groups and layout presets', [bullet('Move a pane'), bullet('Float a pane'), bullet('Tab groups'), bullet('Arrange panes and tabs')].join('\n\n'))}
+<h3>Hide, close or end?</h3><div class="table-wrap"><table><thead><tr><th>Action</th><th>What happens</th></tr></thead><tbody><tr><td>Close the app window</td><td>The background server keeps running shells and chats alive.</td></tr><tr><td>Hide a terminal tab</td><td>The tab’s processes keep running; restore it through the palette.</td></tr><tr><td>Close a pane or tab</td><td>Its processes end. GUI close confirmation is optional and off by default.</td></tr><tr><td>End process…</td><td>Asks first and leaves the terminal’s final screen visible.</td></tr><tr><td>Restart daemon</td><td>Asks first and ends the server’s running shells and chats.</td></tr></tbody></table></div>
 ${details('Close confirmation settings', subsection(configuration, '## Closing tabs and panes'), 'CONFIGURATION.md')}
 <h3>Reconnect and recover</h3>${markdown(subsection(usage, '## Shell lifecycle and recovery'))}
 ${details('Terminal scrolling and retained history', subsection(usage, '## Scrolling'))}${sourceLink('USAGE.md')}`,
@@ -102,14 +103,28 @@ ${code('compi browse\ncompi browse localhost:3000\ncompi browse https://docs.rs 
 <p>The local-server example requires something listening on port 3000. With no URL, the browser home page lists responding local servers found in terminal output and the last five sites for the window.</p>
 <ul><li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>L</kbd> or <kbd>F6</kbd> selects the address field; Enter navigates, Escape restores the current address.</li><li>Back, Forward and Reload/Stop use the pane’s toolbar.</li><li>Split, float, move or close it with the normal pane controls. Closing it does not stop a separate terminal’s server.</li><li><code>compi --json window list</code> reports page URL, title, loading address and errors.</li></ul>
 <div class="notice"><strong>A pane is not browser automation.</strong><p>Opening or navigating a Browser pane does not give an agent DOM inspection, screenshots or page automation. Those come from the agent’s own browser tools.</p></div>
-<p class="platform-note">In 0.5.0, browser panes and PDF/audio/video previews remain visually unqualified on macOS. Web-view behavior and supported media formats depend on the platform.</p>
-${details('Browser toolbar, profile, home page and CLI behavior', [bullet('Open a web page beside a terminal'), bullet('Browser home page'), paragraph('`compi browse URL`')].join('\n\n'))}${sourceLink('USAGE.md')}`,
+<p class="platform-note">Native macOS UI checks for ${version} remain unperformed, so browser panes and PDF/audio/video previews are not yet qualified on a Mac. Web-view behavior and supported media formats depend on the platform.</p>
+${details('Browser toolbar, profile, home page and CLI behavior', [bullet('Open a web page beside a terminal'), bullet('Browser home page'), paragraph('`compi browse URL`')].join('\n\n'))}
+${details('When a dev server starts', subsection(configuration, '## Dev servers'), 'CONFIGURATION.md')}${sourceLink('USAGE.md')}`,
+  },
+  {
+    id: 'chat', title: 'Chat with agents', content: `
+<p class="section-lead">Talk to OMP in a native chat beside your terminals, files and diffs.</p>
+${code('compi chat')}
+<p>Run <code>compi chat</code> in a Compi shell, or choose <strong>OMP chat</strong> in the palette. The chat opens in place of the shell, in its current folder and environment; a WSL terminal runs <code>omp</code> inside the distribution. The shell keeps running underneath: <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>E</kbd> or Esc returns to it. To open chats in a new pane instead, set <strong>Settings → Chat → Opening a chat</strong> to <strong>Beside it</strong>.</p>
+<div class="notice"><strong>Native chat supports OMP only.</strong><p>In ${version}, the chat runs OMP (the <code>omp</code> agent program), which must be installed where the terminal runs. Other agents are not supported in the chat yet. Run them in a terminal, where they can use the same <code>compi</code> CLI.</p></div>
+<ul><li>Enter sends, Shift+Enter starts a new line and <strong>Stop</strong> ends a running turn. While OMP works, Enter steers the running turn; <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Enter</kbd> queues a message for after it.</li><li>Type <code>/</code> for OMP’s commands and <code>@</code> to attach a file from the folder. Paste an image to attach it.</li><li>The row under the message box picks the model, thinking level and mode, and shows context use and cost.</li><li>Each tool call is one line; click it for its input and output. Edits show their diff, with <strong>Open in diff</strong> for Compi’s diff view in a Git repository. Sub-agents are listed with their state, time and cost.</li><li>OMP asks before running tools as its own <code>tools.approvalMode</code> says. <strong>Settings → Chat → Approvals</strong> can choose otherwise.</li></ul>
+<h3>How long a chat runs</h3><p>A chat runs in the Compi daemon, not the window. It keeps going while hidden or with the shell shown, and resumes its session after a daemon restart. It ends when its pane or view closes. Updating Compi restarts the daemon and ends running chats along with shells.</p>
+<h3>Status and the CLI</h3><p>A chat reports program status like a terminal running OMP: working, waiting on you for a permission or question, done or failed. It can notify you like a terminal. OMP in a chat has <code>compi</code> on <code>PATH</code> with the same context as a terminal. A chat shown in place of a terminal targets that terminal’s pane; a chat beside one needs <code>--pane</code> for pane commands.</p>
+<p class="platform-note">Known limits in ${version}: <strong>Open in diff</strong> shows changes not yet staged, and Retry resends attached files but not images.</p>
+${details('Chat controls, sessions, sub-agents and approvals', [bullet('Chat with OMP'), paragraph('`compi chat`')].join('\n\n'))}
+${details('Chat settings', subsection(configuration, '## Chat'), 'CONFIGURATION.md')}${sourceLink('USAGE.md')}`,
   },
   {
     id: 'agents', title: 'Work with agents', content: `
     ${markdown(agentWorkflow.replace(/^# Work with agents\s*/, ''), 'AGENT_WORKFLOW.md')}
     <h3>Operate the workspace from the CLI</h3>
-    <p>Inside a supported Compi shell, the matching CLI is on <code>PATH</code> and inherits its instance and pane context. It operates the workspace around the agent; it is not an agent harness.</p>
+    <p>Inside a supported Compi shell, the matching CLI is on <code>PATH</code> and inherits its instance and pane context. Any agent that can run shell commands can use it, including OMP in a native chat. It operates the workspace around the agent; it is not an agent harness.</p>
 <h3>Discover, inspect, act, read back</h3>${code('compi --json help\ncompi --json pane show\ncompi run -- cargo test --locked -p compi-protocol\ncompi pane capture --scope scrollback --format text')}
 <p>The test command is for a shell in Compi’s source repository. <code>run</code> submits without waiting. Capture reads the output available so far; inspect or capture again to check progress. No fabricated success is returned on behalf of the running program.</p>
 <h3>Choose the exact target</h3>${markdown(paragraph('Outside a Compi shell,'))}
@@ -135,23 +150,23 @@ ${code('compi help\ncompi help pane\ncompi pane capture --help\ncompi --json hel
 <p><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>,</kbd> opens Settings as a pane. Search finds controls across every section. From a terminal, use <code>compi settings appearance</code>.</p>
 <p>Theme selects application and terminal colors together. Preview a tile, then <strong>Apply</strong> to keep it or <strong>Cancel</strong> to restore the current theme. An optional terminal-palette override lives under <strong>Advanced → Terminal colors</strong>.</p>
 <p>Transparency, blur, opacity and fonts are independent preferences. Choose <strong>Comfy</strong> for rounded panes and gutters or <strong>Compact</strong> for edge-to-edge terminal space.</p>
-${details('Themes, imports, exports and configuration example', configuration.split('## Pane density')[0].replace(/^# Appearance and configuration\s*/,''), 'CONFIGURATION.md')}
+${details('Themes, fonts, imports, exports and configuration example', configuration.split('## Chat')[0].replace(/^# Appearance and configuration\s*/,''), 'CONFIGURATION.md')}
 ${details('Pane density and focus indicators', `${subsection(configuration,'## Pane density')}\n\n${subsection(configuration,'## Focus indicator')}`, 'CONFIGURATION.md')}
-${details('Tab metadata', subsection(configuration,'## Tab metadata'), 'CONFIGURATION.md')}
+${details('Tab details', subsection(configuration,'## Tab details'), 'CONFIGURATION.md')}
 <h3>Shell prompts</h3><p><strong>Settings → Terminal → Shell prompt</strong> uses your existing Oh My Posh or Starship installation in the environment where the shell runs. Compi does not install a provider or replace it with a native prompt renderer.</p>
 ${details('Prompt styles, applying, backups and restoration', subsection(usage,'## Shell prompt'))}${sourceLink('CONFIGURATION.md')}`,
   },
   {
     id: 'notifications', title: 'Status and notifications', content: `
-<p class="section-lead">See when supporting programs are working, blocked, finished or failed.</p>
+<p class="section-lead">See when supporting programs and agent chats are working, blocked, finished or failed.</p>
 <p>Programs report status through OSC 7501. Compi displays their reports instead of guessing from terminal output. Indicators can appear on tabs, panes and the sidebar; hovering shows the reported details.</p>
 <p>Open <strong>Settings → Notifications</strong> or run <code>compi settings notifications</code>.</p>
 <div class="table-wrap"><table><thead><tr><th>Delivery</th><th>Behavior</th></tr></thead><tbody><tr><td>Automatic</td><td>In-app cards while Compi is active; system notifications while it is in the background.</td></tr><tr><td>In-app only</td><td>Cards inside Compi.</td></tr><tr><td>System only</td><td>Operating-system notifications.</td></tr><tr><td>Both</td><td>Both delivery paths for an eligible event.</td></tr></tbody></table></div>
-<p><strong>Needs attention</strong> is on; <strong>Finished</strong> is off by default. Working, idle and failures do not generate notifications in 0.5.0. Existing reports are not replayed on reconnect. Click a card or notification to return to its terminal; dismissing a card does not clear program status.</p>
-<p><strong>Sound</strong> starts Off. On Windows choose Default, Message, Mail, Reminder or Text message, and use <strong>Play</strong> to preview. Quiet modes and system notification-sound settings are respected. <strong>Send test</strong> exercises the current delivery settings.</p>
-<p class="platform-note">macOS notifications require the app bundle, request OS permission and have no sound in 0.5.0. They remain unverified on a Mac in that release.</p>
+<p><strong>Needs attention</strong> is on; <strong>Finished</strong> is off by default. Failures, working and idle never notify, and reports from before Compi opened or reconnected are not replayed. Agent chats notify like terminals. The pane you are in notifies only after 30 seconds without input by default (<strong>Focused pane</strong>); <strong>Never</strong> keeps it quiet. Click a card or notification to return to its terminal; dismissing a card does not clear program status.</p>
+<p><strong>Notification sound</strong> starts Off; use <strong>Play</strong> to preview. On Windows choose Default, Message, Mail, Reminder or Text message; on macOS, Default or one of the alert sounds. Quiet modes and system notification-sound settings are respected. <strong>Send test</strong> exercises the current delivery settings.</p>
+<p class="platform-note">On macOS, notifications need Compi to run from its app bundle, and macOS asks for permission on the first one. Native macOS UI checks for ${version} remain unperformed.</p>
 ${details('Status lifecycle, indicator controls and notifications', subsection(usage,'## Program status').split('A shell function can report status too:')[0])}
-${details('Notification configuration', subsection(configuration,'## Notifications'), 'CONFIGURATION.md')}${sourceLink('CONFIGURATION.md','#notifications')}`,
+${details('Status and notification configuration', `${subsection(configuration,'## Program status')}\n\n${subsection(configuration,'## Notifications')}`, 'CONFIGURATION.md')}${sourceLink('CONFIGURATION.md','#notifications')}`,
   },
   {
     id: 'remote', title: 'Remote access', content: `
@@ -174,21 +189,23 @@ ${details('Process inspection, quitting and saved columns', [bullet('Inspect and
     id: 'updates', title: 'Updates and repair', content: `
 <p class="section-lead">Check for updates, understand restarts and recover an installation.</p>
 ${code('compi update --check')}
-<p>Use <strong>Settings → Updates</strong> to check, download and install. Nothing installs or restarts a daemon without your consent.</p>
-<div class="notice"><strong>Updating to 0.5.0 restarts the local daemon.</strong><p>Running shells end. Save your work first. Workspace format 8 carries over, but protocol 35 replaces 0.4.x’s protocol 34. The local updater does not restart remote daemons.</p><p>Windows users on 0.3.0 or earlier need to run the rebuilt 0.5.0 Setup once; the older helper cannot replace itself.</p></div>
+<p>Use <strong>Settings → Updates</strong> to check, download and install. Compi checks for updates by default; automatic downloads are off. Nothing installs, closes windows or restarts a daemon without your click.</p>
+<div class="notice"><strong>Updating to ${version} restarts the local daemon.</strong><p>Running shells and chats end, so save your work first. Daemon protocol 40 and workspace format 10 are unchanged from 0.8.0; the new daemon is required for the fixes. The local updater does not restart remote daemons. Shells ended by the restart start fresh in their last directory the first time their tab is shown; earlier output is gone.</p><p>From 0.3.1 or newer, update in the app. From 0.3.0 or earlier, run <a href="https://github.com/cloudboy-jh/compi/releases/download/${ref}/Compi-${version}-Setup.exe">Compi ${version} Setup</a> once so the old update helper can be replaced.</p></div>
 ${details('Update flow and activation recovery', subsection(installation,'## Updates'), 'INSTALLATION.md')}
 ${details('Updating from a terminal', subsection(usage,'### Updating from the terminal'))}
 <h3>Repair and removal</h3>${markdown(subsection(installation,'## Repair and removal'), 'INSTALLATION.md')}
-<p><a href="https://github.com/cloudboy-jh/compi/releases/tag/v0.5.0">Read the exact release notes before upgrading ↗</a></p>${sourceLink('INSTALLATION.md')}`,
+<p><a href="https://github.com/cloudboy-jh/compi/releases/tag/${ref}">Read the exact release notes before upgrading ↗</a></p>${sourceLink('INSTALLATION.md')}`,
   },
   {
     id: 'troubleshooting', title: 'Troubleshooting', content: `
 <p class="section-lead">Start with the affected environment and preserve the evidence.</p>
-<h3>Windows cannot start a shell</h3><p>Confirm WSL2 is installed and the intended distribution starts. For a portable install, keep the entire archive together: the daemon requires its bundled terminal runtime. Use Setup’s repair path for installation problems.</p>
+<h3>Windows cannot start a shell</h3><p>New tabs start Windows PowerShell unless <strong>Settings → Terminal → Shell</strong> is set to WSL. For WSL, confirm WSL2 is installed (<code>wsl --install</code>) and your default distribution starts. For a portable install, keep the entire archive together: the daemon requires its bundled terminal runtime. Use Setup’s repair path for installation problems; <code>Compi-Setup.exe --repair</code> also checks WSL.</p>
+<h3>A chat will not start</h3><p>Native chat supports OMP only. Install <code>omp</code> where the terminal runs: for a WSL terminal, inside its distribution. Other agents run in a terminal.</p>
+<h3>An agent cannot find <code>compi</code></h3><p>Run the agent in a Compi terminal or chat, where the CLI is on <code>PATH</code>. If a WSL distribution’s <code>/etc/profile</code> resets <code>PATH</code> for login shells, an agent’s login shell may not find <code>compi</code>. Outside a Compi shell, choose a daemon with <code>--instance</code> or <code>--connect</code>.</p>
 <h3>A pane is disconnected or already attached</h3><p>Use <strong>Reconnect window</strong> from the palette. It does not restart shells or steal another window’s attachment. Inspect <code>compi --json pane show</code> or open Diagnostics for the error. A process that ended is not restored merely by reconnecting.</p>
-<h3>A browser page will not load</h3><p>Check the address and that the local server is listening, then use Retry. The Windows browser needs WebView2; browser/media behavior on macOS remains visually unqualified in 0.5.0.</p>
+<h3>A browser page will not load</h3><p>Check the address and that the local server is listening, then use Retry. The Windows browser needs WebView2. Native macOS UI checks for ${version} remain unperformed.</p>
 <h3>A file changed outside Compi</h3><p>Use the editor’s Reload / Keep mine / Overwrite choices deliberately. Recover unsaved buffers through <strong>Recover unsaved edits…</strong> in the palette. Do not discard a conflict just to clear the notice.</p>
-<h3>A notification makes no sound</h3><p>Check Sound and delivery in Notifications, preview with Play, then check Windows notification sounds and quiet modes. macOS has no notification sound in 0.5.0. Supporting programs must report status; ordinary output does not create an event.</p>
+<h3>A notification makes no sound</h3><p>Check Notification sound and delivery in Notifications, preview with Play, then check the system’s notification sounds and quiet modes: Do Not Disturb or quiet hours on Windows, Focus or Compi’s <strong>Play sound for notifications</strong> switch on macOS. Supporting programs must report status; ordinary output does not create an event.</p>
 <h3>Collect a useful bug report</h3><ul><li>Compi version, operating system and whether the affected shell/files are on the host, WSL or SSH.</li><li>The exact action, expected result, actual result and a short reproduction.</li><li><strong>Settings → Advanced → Performance → Copy diagnostics</strong>, or the palette’s Diagnostics action.</li><li>Relevant logs only, with tokens, private paths and other sensitive information removed.</li></ul>
 <p>Windows repair logs: <code>%LOCALAPPDATA%\\Compi\\doctor.log</code>. Setup logs are <code>installer.log</code> and <code>installer-msi.log</code> there. The update log is <code>.compi-update/update.log</code> in the install folder.</p>
 <p><a class="text-link" href="https://github.com/cloudboy-jh/compi/issues">Report an issue on GitHub ↗</a></p>`,
@@ -198,10 +215,23 @@ const navigation = sections.map(section=>`<a href="#${section.id}" data-doc-link
 const content = sections.map(section=>`<section class="docs-section" id="${section.id}" data-doc-section><h2>${escape(section.title)}<a class="heading-link" href="#${section.id}" aria-label="Link to ${escape(section.title)}">#</a></h2>${section.content}</section>`).join('\n');
 let head = index.match(/<head>[\s\S]*?<\/head>/)?.[0];
 assert(head, 'Homepage head missing');
-head = head.replace(/<title>[\s\S]*?<\/title>/, `<title>Compi documentation · ${version}</title>`)
-  .replace(/<meta name="description"[^>]+>/, '<meta name="description" content="Install and use Compi: workspaces, editing, browser panes, agents, CLI reference, notifications and troubleshooting.">')
-  .replace(/<meta property="og:title"[^>]+>/, `<meta property="og:title" content="Compi documentation · ${version}">`)
-  .replace('</head>', '<link rel="stylesheet" href="docs.css">\n</head>');
+const docsTitle = `Compi documentation · ${version}`;
+const docsDescription = `Install and use Compi ${version}: workspaces, files and review, browser panes, native OMP chat, agents, the compi CLI, notifications and troubleshooting.`;
+const docsUrl = 'https://compi.dev/docs.html';
+head = [
+  [/<title>[\s\S]*?<\/title>/, `<title>${escape(docsTitle)}</title>`],
+  [/<meta name="description"[^>]+>/, `<meta name="description" content="${escape(docsDescription)}">`],
+  [/<link rel="canonical"[^>]+>/, `<link rel="canonical" href="${docsUrl}">`],
+  [/<meta property="og:url"[^>]+>/, `<meta property="og:url" content="${docsUrl}">`],
+  [/<meta property="og:title"[^>]+>/, `<meta property="og:title" content="${escape(docsTitle)}">`],
+  [/<meta property="og:description"[^>]+>/, `<meta property="og:description" content="${escape(docsDescription)}">`],
+  [/<meta name="twitter:title"[^>]+>/, `<meta name="twitter:title" content="${escape(docsTitle)}">`],
+  [/<meta name="twitter:description"[^>]+>/, `<meta name="twitter:description" content="${escape(docsDescription)}">`],
+  ['</head>', '<link rel="stylesheet" href="docs.css">\n</head>'],
+].reduce((result, [pattern, replacement]) => {
+  assert(typeof pattern === 'string' ? result.includes(pattern) : pattern.test(result), `Homepage head is missing ${pattern}`);
+  return result.replace(pattern, replacement);
+}, head);
 const themeButton = index.match(/<button class="page-theme-toggle[\s\S]*?<\/button>/)?.[0];
 assert(themeButton, 'Shared theme button missing');
 const header = `<header class="site-header"><div class="header-inner wrap"><a class="brand" href="/" aria-label="Compi home"><img src="assets/compi-icon.png?v=neutral-eye" width="34" height="34" alt="">Compi</a><nav aria-label="Main navigation"><a class="docs-home-link" href="/">Home</a><a class="docs-header-link" href="/docs.html" aria-current="page">Docs</a><a href="https://github.com/cloudboy-jh/compi"><img class="github" src="assets/mark-github.svg" width="16" height="16" alt="">GitHub</a>${themeButton}</nav></div></header>`;
